@@ -15,7 +15,7 @@ const appSettings = {
 
 const app = initializeApp(appSettings);
 const database = getDatabase(app);
-
+let colors = [];
 // Get a reference to the current user's shopping list
 let userId;
 const auth = getAuth();
@@ -26,29 +26,42 @@ signInAnonymously(auth)
 
     // Rest of your code (event listeners, etc.) goes here
     const inputFieldEl = document.getElementById("input-field");
+    const inputFieldColor = document.getElementById("input-color");
     const addButtonEl = document.getElementById("add-button");
+    const sortButtonEl = document.getElementById("sort-button");
     const shoppingListEl = document.getElementById("shopping-list");
-
+ 
     addButtonEl.addEventListener("click", function() {
         let inputValue = inputFieldEl.value;
+        let inputColor = inputFieldColor.value;
+        
 
-        push(shoppingListInDB, inputValue);
+        push(shoppingListInDB, {value:inputValue, color: inputColor} );
 
         clearInputFieldEl();
+      
     });
+    sortButtonEl.addEventListener("click",function(){
+      console.log(colors)
 
-    onValue(shoppingListInDB, function(snapshot) {
+    })
+
+
+  
+  onValue(shoppingListInDB, function(snapshot) {
         if (snapshot.exists()) {
             let itemsArray = Object.entries(snapshot.val());
-
             clearShoppingListEl();
+            
 
             for (let i = 0; i < itemsArray.length; i++) {
                 let currentItem = itemsArray[i];
                 let currentItemID = currentItem[0];
                 let currentItemValue = currentItem[1];
-
-                appendItemToShoppingListEl(currentItemID, currentItemValue);
+                let currentItemValueColor = currentItem[1];
+             
+              colors.push({color : currentItemValue.color, value: currentItemValue.value})
+  appendItemToShoppingListEl(currentItemID, currentItemValue.value,currentItemValue.color);
             }
         } else {
             shoppingListEl.innerHTML = "No items here... yet";
@@ -61,11 +74,14 @@ signInAnonymously(auth)
 
     function clearInputFieldEl() {
         inputFieldEl.value = "";
+        inputFieldColor.value="";
     }
 
-    function appendItemToShoppingListEl(itemID, itemValue) {
+    function appendItemToShoppingListEl(itemID, itemValue,itemColor) {
         let newEl = document.createElement("li");
         newEl.textContent = itemValue;
+        newEl.style.backgroundColor = itemColor
+        
 
         newEl.addEventListener("click", function() {
             let exactLocationOfItemInDB = ref(database, `users/${userId}/shoppingList/${itemID}`);
@@ -81,3 +97,5 @@ signInAnonymously(auth)
   .catch((error) => {
     console.error("Error signing in anonymously:", error);
   });
+
+  
