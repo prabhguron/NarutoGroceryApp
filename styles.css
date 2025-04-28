@@ -86,3 +86,40 @@ ul li:hover {
     height: 100px;
     border: 1px solid black;
 }
+
+.colorChooser {
+    display: flex;
+  }
+  
+  .button {
+    margin: 0.2rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+
+  }
+  
+  .F8C0C8 {
+    background-color: #F8C0C8;
+
+  }
+  
+  .B8E2F2 {
+    background-color: #B8E2F2;
+  }
+  
+
+  .FFFFF0 {
+    color: white;
+    background-color: #FFFFF0;
+  }
+  
+  .palette {
+    margin: 1rem 0 0 0;
+    height: 1rem;
+    width: 10rem;
+    border-radius:10px;
+  }
+  .mystyle{
+    border-style: solid;
+    border-color: gold;  }

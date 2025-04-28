@@ -1,6 +1,7 @@
 import { initializeApp as initializeFirebaseApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase as getFirebaseDatabase, ref as databaseRef, push as pushToDatabase, onValue as onDatabaseValueChange, remove as removeFromDatabase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import { getAuth as getFirebaseAuth, signInAnonymously as signInAnonymouslyWithFirebase } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import firebaseConfig from './config.js';
 
 (function () {
     const relList = document.createElement("link").relList;
@@ -36,15 +37,9 @@ import { getAuth as getFirebaseAuth, signInAnonymously as signInAnonymouslyWithF
     }
 })();
 
-const firebaseConfig = {
-    apiKey: "AIzaSyBtcPPVvIyI6iaSlpriHIBD7h2dhc_IQYM",
-    authDomain: "grocery-helper-653fd.firebaseapp.com",
-    databaseURL: "https://grocery-helper-653fd-default-rtdb.firebaseio.com",
-    projectId: "grocery-helper-653fd",
-    storageBucket: "grocery-helper-653fd.appspot.com",
-    messagingSenderId: "487658271712",
-    appId: "1:487658271712:web:3df26249ca7f1200d37185"
-};
+console.log(firebaseConfig.apiKey); // Example usage
+
+
 
 const firebaseApp = initializeFirebaseApp(firebaseConfig);
 const database = getFirebaseDatabase(firebaseApp);
@@ -59,21 +54,40 @@ signInAnonymouslyWithFirebase(auth)
 
         const userShoppingListRef = databaseRef(database, `users/${currentUserId}/shoppingList`);
         const inputField = document.getElementById("input-field");
-        const inputColor = document.getElementById("input-color");
         const addButton = document.getElementById("add-button");
         const sortButton = document.getElementById("sort-button");
         const shoppingListContainer = document.getElementById("shopping-list");
+        let button = document.querySelectorAll(".button");
+        let currentColor;
+        
+
+
+        for (let i = 0; i < button.length; i++) {
+          button[i].onclick = function() {
+    
+ 
+            button.forEach(btn => btn.classList.remove("mystyle"))
+
+
+            button[i].classList.toggle("mystyle")
+             currentColor = "#"+(button[i].className.split(" ")[0]);
+            
+          };
+        }
 
         addButton.addEventListener("click", function () {
             const itemValue = inputField.value;
-            const itemColor = inputColor.value;
-            pushToDatabase(userShoppingListRef, { value: itemValue, color: itemColor });
+            const itemColor = currentColor;
+            const currentUser = currentUserId;
+            console.log(currentUserId)
+            pushToDatabase(userShoppingListRef, { currentUser:currentUserId, value: itemValue, color: itemColor });
             clearInputFields();
         });
 
         sortButton.addEventListener("click", function () {
-            
-            let values = {red: 1, yellow: 2, green: 3}
+
+
+            let values = {'#F8C0C8': 1, '#B8E2F2': 2, '#FFFFF0': 3}
 
         console.log(shoppingListData)
             
@@ -81,6 +95,7 @@ signInAnonymouslyWithFirebase(auth)
 
                 let valueA = values[a.color]
                 let valueB = values[b.color]
+                
 
                return valueA - valueB
 
@@ -90,7 +105,8 @@ signInAnonymouslyWithFirebase(auth)
             clearShoppingList();
 
             for (const item of sortedData) {
-                addShoppingListItem("id", item.value, item.color);
+                console.log(item)
+                addShoppingListItem(item.key, item.value, item.color);
              
             }
 
@@ -119,9 +135,12 @@ signInAnonymouslyWithFirebase(auth)
 
         function clearInputFields() {
             inputField.value = "";
-            inputColor.value = "";
         }
 
+    
+
+
+        
         function addShoppingListItem(itemKey, itemValue, itemColor) {
             const listItem = document.createElement("li");
             listItem.textContent = itemValue;
@@ -138,3 +157,4 @@ signInAnonymouslyWithFirebase(auth)
     .catch((error) => {
         console.error("Error signing in anonymously:", error);
     });
+
